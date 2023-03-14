@@ -12,7 +12,7 @@ export const Place = (params) => {
 
   return (
     <div>
-      {!marker && <div>Loading...</div>}
+      {!marker && <div>Завантаження...</div>}
       {marker && (
         <>
           <div>
