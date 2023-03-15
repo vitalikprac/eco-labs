@@ -44,3 +44,13 @@
 .param-title{
   font-size: medium;
 }
+
+.settings {
+  .ant-checkbox-group{
+    display: flex;
+    flex-direction: column;
+  }
+  .ant-checkbox-group-item {
+    margin-inline-start: 0;
+  }  
+}

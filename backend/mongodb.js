@@ -14,6 +14,29 @@ export const dbApi = {
   getMarkers: async () => {
     return db.collection('markers').find().toArray();
   },
+  getMarkersWithParameters: async () => {
+    const markers = await db.collection('markers').aggregate([
+      {
+        $lookup: {
+          from: 'parameters',
+          localField: 'parameters',
+          foreignField: '_id',
+          as: 'parameters',
+        },
+      },
+    ]);
+    return markers.toArray();
+  },
+  getParameters: (parameters) => {
+    return db
+      .collection('parameters')
+      .find({
+        _id: {
+          $in: parameters,
+        },
+      })
+      .toArray();
+  },
   getMarkerById: async (id) => {
     const marker = await db.collection('markers').findOne({
       _id: parseInt(id),

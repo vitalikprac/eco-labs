@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
-import './App.css';
+import './App.scss';
 
 import { Place } from './Place.jsx';
 import { getMarkers } from './api.js';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import Settings from './components/Settings.jsx';
+import { settingsFilters } from './state/atoms.js';
+import { useRecoilValue } from 'recoil';
 
 function App() {
   const [markers, setMarkers] = useState([]);
+  const filters = useRecoilValue(settingsFilters);
 
   useEffect(() => {
-    getMarkers().then((markers) => {
+    getMarkers(filters).then((markers) => {
       setMarkers(markers);
     });
-  }, []);
+
+    localStorage.setItem('filters', JSON.stringify(filters ?? []));
+  }, [filters]);
 
   return (
     <div className="App">
+      <Settings />
       <MapContainer
         style={{
           height: '100%',
