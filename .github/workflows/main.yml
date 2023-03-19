@@ -47,5 +47,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./front/dist # Replace this with the directory that contains your built files
           publish_branch: gh-pages # Replace this with the name of your gh-pages branch
