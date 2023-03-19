@@ -24,9 +24,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./front
     strategy:
       matrix:
         node-version: [14.x]
@@ -40,10 +37,12 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install # will run `yarn install` command
+          dir: 'front'
       - name: Run build
         uses: borales/actions-yarn@v4
         with:
           cmd: build # will run `yarn build` command
+          dir: 'front'
   # Single deploy job since we're just deploying
   deploy:
     defaults:
