@@ -14,7 +14,9 @@ function App() {
 
   useEffect(() => {
     getMarkers(filters).then((markers) => {
-      setMarkers(markers);
+      if (markers.statusCode === 200) {
+        setMarkers(markers);
+      }
     });
 
     localStorage.setItem('filters', JSON.stringify(filters ?? []));

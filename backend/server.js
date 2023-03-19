@@ -56,7 +56,7 @@ fastify.get('/marker/:id', async (request) => {
 const start = async () => {
   try {
     await startDb();
-    await fastify.listen({ port: 4000 });
+    await fastify.listen({ host: '0.0.0.0', port: 4444 });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
