@@ -40,6 +40,10 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install # will run `yarn install` command
+      - name: Run build
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: build # will run `yarn build` command
   # Single deploy job since we're just deploying
   deploy:
     defaults:
