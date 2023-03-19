@@ -7,6 +7,18 @@ import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import Settings from './components/Settings.jsx';
 import { settingsFilters } from './state/atoms.js';
 import { useRecoilValue } from 'recoil';
+import L from 'leaflet';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const MarkerIcon = L.icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  shadowAnchor: [13, 41],
+});
 
 function App() {
   const [markers, setMarkers] = useState([]);
@@ -36,7 +48,11 @@ function App() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {markers?.map((marker) => (
-          <Marker key={marker._id} position={marker.coordinates}>
+          <Marker
+            icon={MarkerIcon}
+            key={marker._id}
+            position={marker.coordinates}
+          >
             <Popup>
               <Place {...marker} />
             </Popup>
