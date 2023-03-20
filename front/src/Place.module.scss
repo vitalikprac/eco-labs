@@ -2,4 +2,18 @@
 .wrapper {
  outline: 1px solid #1677ff;
   padding: 0.25rem;
+
+
+ :global(.ant-segmented-thumb){
+  visibility: hidden;
+  height: 28px;
+ }
+ :global(.ant-segmented-group){
+  flex-wrap: wrap;
+ }
+}
+
+.content{
+ max-height: 300px;
+ overflow-y: scroll;
 }

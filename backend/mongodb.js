@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb';
+import { parameters11 } from './testData.js';
 
 const url = 'mongodb+srv://vitalikprac:3p3UUTz6ITVSDGZW@cluster0.w4m7vdr.mongodb.net/test';
 const client = new MongoClient(url);
@@ -7,6 +8,16 @@ const db = client.db(dbName);
 
 export async function startDb() {
   await client.connect();
+
+  const params = parameters11.map((param) => ({
+    ...param,
+    _id: param.id,
+  }));
+
+  params.forEach((param) => {
+    delete param.id;
+  });
+  db.collection('parameters').insertMany(params);
   return db;
 }
 

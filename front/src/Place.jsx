@@ -21,6 +21,8 @@ export const Place = (params) => {
   const [marker, setMarker] = useState(null);
 
   const [currentSystem, setCurrentSystem] = useState(0);
+  const parametersRef = useRef(null);
+
   const systems = [
     {
       _id: 0,
@@ -47,6 +49,14 @@ export const Place = (params) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (!parametersRef.current) return;
+    if (parametersRef.current.scrollHeight > 300) {
+      parametersRef.current.style.height = '300px';
+      parametersRef.current.style.overflowY = 'scroll';
+    }
+  }, [parametersRef.current]);
+
   const handleSystemChange = (value) => {
     setCurrentSystem(value);
   };
@@ -69,11 +79,11 @@ export const Place = (params) => {
           </div>
           <hr />
           <div>
-            <span className="param-title">Параметри</span>:
+            <span className="param-title">Підсистеми</span>:
           </div>
           <div className={S.wrapper}>
             <Segmented onChange={handleSystemChange} options={systemsOptions} />
-            <div>
+            <div ref={parametersRef} className={S.content}>
               {parameters.map((parameter) => (
                 <div className={parameter?.type?.value} key={parameter._id}>
                   <i>{parameter.name}</i> - {parameter?.value ? <b dangerouslySetInnerHTML={{ __html: parameter.value }}></b> : <b>немає точних значень</b>}
