@@ -11,6 +11,9 @@ export async function startDb() {
 }
 
 export const dbApi = {
+  getSystems: async () => {
+    return db.collection('systems').find().toArray();
+  },
   getMarkers: async () => {
     return db.collection('markers').find().toArray();
   },

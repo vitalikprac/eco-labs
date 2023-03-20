@@ -1,14 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Segmented } from 'antd';
+import { CaretLeftOutlined } from '@ant-design/icons';
+import S from './Place.module.scss';
 import { getMarkerById } from './api.js';
+
+const carouselStyle = {
+  width: '100%',
+  background: 'red',
+};
+
+const SYSTEMS = [
+  {
+    id: '0',
+    name: 'Всі',
+    value: [],
+  },
+];
 
 export const Place = (params) => {
   const [marker, setMarker] = useState(null);
+
+  const [currentSystem, setCurrentSystem] = useState(0);
+  const systems = [
+    {
+      _id: 0,
+      name: 'Всі',
+      values: [],
+    },
+    ...(marker?.systems ?? []),
+  ];
+  const system = systems?.find((system) => system._id === currentSystem);
+
+  const systemsOptions = systems.map((system) => ({
+    label: system.name,
+    value: system._id,
+  }));
+
+  const parameters = marker?.parameters.filter((parameter) => {
+    if (system._id === 0) return true;
+    return system.values.some((value) => parameter?.name.toLowerCase().includes(value?.toLowerCase()));
+  });
 
   useEffect(() => {
     getMarkerById(params._id).then((marker) => {
       setMarker(marker);
     });
   }, []);
+
+  const handleSystemChange = (value) => {
+    setCurrentSystem(value);
+  };
 
   return (
     <div>
@@ -24,26 +65,21 @@ export const Place = (params) => {
           </div>
           <hr />
           <div>
-            <span className="param-title">Тип</span>:{' '}
-            <b
-              dangerouslySetInnerHTML={{ __html: marker?.identification?.name }}
-            ></b>
+            <span className="param-title">Тип</span>: <b dangerouslySetInnerHTML={{ __html: marker?.identification?.name }}></b>
           </div>
           <hr />
           <div>
             <span className="param-title">Параметри</span>:
           </div>
-          <div>
-            {marker.parameters.map((parameter) => (
-              <div className={parameter?.type?.value} key={parameter._id}>
-                <i>{parameter.name}</i> -{' '}
-                {parameter?.value ? (
-                  <b dangerouslySetInnerHTML={{ __html: parameter.value }}></b>
-                ) : (
-                  <b>немає точних значень</b>
-                )}
-              </div>
-            ))}
+          <div className={S.wrapper}>
+            <Segmented onChange={handleSystemChange} options={systemsOptions} />
+            <div>
+              {parameters.map((parameter) => (
+                <div className={parameter?.type?.value} key={parameter._id}>
+                  <i>{parameter.name}</i> - {parameter?.value ? <b dangerouslySetInnerHTML={{ __html: parameter.value }}></b> : <b>немає точних значень</b>}
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

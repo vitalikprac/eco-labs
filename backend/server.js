@@ -13,13 +13,10 @@ fastify.get('/', async () => {
   return { hello: 'works' };
 });
 
-fastify.post('/markers', async (request) => {
-  const filters = request.body?.filters ?? [];
-  const markers = await dbApi.getMarkersWithParameters();
+const filterMarkers = (markers, filters) => {
   if (filters.includes('all')) {
     return markers;
   }
-
   const newMarkers = [];
   const middleCoordinates = [50.426992, 30.580841];
   if (filters.includes('left-side')) {
@@ -30,9 +27,7 @@ fastify.post('/markers', async (request) => {
   }
 
   const findByNames = (markers, names) => {
-    return markers.filter((marker) =>
-      marker.parameters.some((parameter) => names.some((x) => parameter.name.toLowerCase().includes(x.toLowerCase()))),
-    );
+    return markers.filter((marker) => marker.parameters.some((parameter) => names.some((x) => parameter.name.toLowerCase().includes(x.toLowerCase()))));
   };
 
   if (filters.includes('economic')) {
@@ -47,10 +42,23 @@ fastify.post('/markers', async (request) => {
   return newMarkers.filter((marker, index, self) => {
     return self.findIndex((m) => m._id === marker._id) === index;
   });
+};
+
+fastify.post('/markers', async (request) => {
+  const filters = request.body?.filters ?? [];
+  const markers = await dbApi.getMarkersWithParameters();
+  return filterMarkers(markers, filters);
 });
 
 fastify.get('/marker/:id', async (request) => {
-  return dbApi.getMarkerById(request.params.id);
+  const systems = await dbApi.getSystems();
+  const marker = await dbApi.getMarkerById(request.params.id);
+  marker.systems = systems.filter((system) =>
+    system.values.some((value) => {
+      return marker.parameters.some((parameter) => parameter.name.toLowerCase().includes(value.toLowerCase()));
+    }),
+  );
+  return marker;
 });
 
 const start = async () => {
