@@ -1,5 +1,4 @@
-import { MongoClient } from 'mongodb';
-import { parameters11 } from './testData.js';
+import { MongoClient, ObjectId } from 'mongodb';
 
 const url = 'mongodb+srv://vitalikprac:3p3UUTz6ITVSDGZW@cluster0.w4m7vdr.mongodb.net/test';
 const client = new MongoClient(url);
@@ -8,18 +7,16 @@ const db = client.db(dbName);
 
 export async function startDb() {
   await client.connect();
-
-  const params = parameters11.map((param) => ({
-    ...param,
-    _id: param.id,
-  }));
-
-  params.forEach((param) => {
-    delete param.id;
-  });
-  db.collection('parameters').insertMany(params);
   return db;
 }
+
+const objectIdOrInt = (id) => {
+  if (id.toString().length > 10) {
+    return new ObjectId(id);
+  } else {
+    return parseInt(id);
+  }
+};
 
 export const dbApi = {
   getSystems: async () => {
@@ -51,9 +48,25 @@ export const dbApi = {
       })
       .toArray();
   },
+  createParameters: async (parameters) => {
+    if (parameters.length === 0) {
+      return {};
+    }
+    return (await db.collection('parameters').insertMany(parameters))?.insertedIds;
+  },
+  getIdentification: async (name) => {
+    return db.collection('identification').findOne({
+      name,
+    });
+  },
+  createIdentification: async (name) => {
+    const result = await db.collection('identification').insertOne({ name });
+    return result?.insertedId;
+  },
   getMarkerById: async (id) => {
+    id = objectIdOrInt(id);
     const marker = await db.collection('markers').findOne({
-      _id: parseInt(id),
+      _id: id,
     });
 
     const types = await db.collection('types').find({}).toArray();
@@ -68,12 +81,34 @@ export const dbApi = {
       .toArray();
     params.forEach((param) => {
       if (param.type !== undefined) {
-        param.type = types.find((type) => type._id === param.type);
+        param.type = types.find((type) => type._id.toString() === param.type.toString());
       }
     });
 
     marker.parameters = params;
-    marker.identification = identification.find((item) => item._id === marker.identification_id);
+
+    marker.identification = identification.find((item) => item._id.toString() === marker.identification_id.toString());
     return marker;
+  },
+  getMarkersWithIdentificationId: async (id) => {
+    id = objectIdOrInt(id);
+    return db.collection('markers').find({ identification_id: id }).toArray();
+  },
+  deleteIdentification: async (id) => {
+    return db.collection('identification').deleteOne({ _id: id });
+  },
+  deleteParameters: async (ids) => {
+    ids = ids.map((id) => objectIdOrInt(id));
+    return db.collection('parameters').deleteMany({
+      _id: {
+        $in: ids,
+      },
+    });
+  },
+  createMarker: async (marker) => {
+    return db.collection('markers').insertOne(marker);
+  },
+  deleteMarker: async (id) => {
+    return db.collection('markers').deleteOne({ _id: id });
   },
 };

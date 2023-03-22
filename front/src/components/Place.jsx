@@ -1,27 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Segmented } from 'antd';
-import { CaretLeftOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Segmented, notification } from 'antd';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+
 import S from './Place.module.scss';
-import { getMarkerById } from './api.js';
-
-const carouselStyle = {
-  width: '100%',
-  background: 'red',
-};
-
-const SYSTEMS = [
-  {
-    id: '0',
-    name: 'Всі',
-    value: [],
-  },
-];
+import { getMarkerById, getMarkers, removeMarkerById } from '../api.js';
+import { markersAtom, settingsFiltersAtom } from '../state/atoms.js';
 
 export const Place = (params) => {
   const [marker, setMarker] = useState(null);
 
   const [currentSystem, setCurrentSystem] = useState(0);
   const parametersRef = useRef(null);
+  const filters = useRecoilValue(settingsFiltersAtom);
+  const setMarkers = useSetRecoilState(markersAtom);
 
   const systems = [
     {
@@ -40,7 +31,9 @@ export const Place = (params) => {
 
   const parameters = marker?.parameters.filter((parameter) => {
     if (system._id === 0) return true;
-    return system.values.some((value) => parameter?.name.toLowerCase().includes(value?.toLowerCase()));
+    return system.values.some((value) =>
+      parameter?.name.toLowerCase().includes(value?.toLowerCase()),
+    );
   });
 
   useEffect(() => {
@@ -61,6 +54,16 @@ export const Place = (params) => {
     setCurrentSystem(value);
   };
 
+  const handleRemove = async () => {
+    const response = await removeMarkerById(params._id);
+    if (!response.success) {
+      alert('Помилка - невірний ключ адміністратора');
+    }
+
+    const markers = await getMarkers(filters);
+    setMarkers(markers);
+  };
+
   return (
     <div>
       {!marker && <div>Завантаження...</div>}
@@ -75,7 +78,10 @@ export const Place = (params) => {
           </div>
           <hr />
           <div>
-            <span className="param-title">Тип</span>: <b dangerouslySetInnerHTML={{ __html: marker?.identification?.name }}></b>
+            <span className="param-title">Тип</span>:{' '}
+            <b
+              dangerouslySetInnerHTML={{ __html: marker?.identification?.name }}
+            ></b>
           </div>
           <hr />
           <div>
@@ -86,11 +92,26 @@ export const Place = (params) => {
             <div ref={parametersRef} className={S.content}>
               {parameters.map((parameter) => (
                 <div className={parameter?.type?.value} key={parameter._id}>
-                  <i>{parameter.name}</i> - {parameter?.value ? <b dangerouslySetInnerHTML={{ __html: parameter.value }}></b> : <b>немає точних значень</b>}
+                  <i>{parameter.name}</i> -{' '}
+                  {parameter?.value ? (
+                    <b
+                      dangerouslySetInnerHTML={{ __html: parameter.value }}
+                    ></b>
+                  ) : (
+                    <b>немає точних значень</b>
+                  )}
                 </div>
               ))}
             </div>
           </div>
+          <Button
+            className={S.removeButton}
+            type="primary"
+            danger
+            onClick={handleRemove}
+          >
+            Видалити
+          </Button>
         </>
       )}
     </div>

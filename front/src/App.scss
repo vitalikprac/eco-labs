@@ -54,3 +54,13 @@
     margin-inline-start: 0;
   }  
 }
+
+.new-marker {
+  filter: hue-rotate(120deg);
+}
+
+.info-modal{
+  .ant-modal-confirm-content{
+    margin-inline-start: 16px!important;
+  }
+}
