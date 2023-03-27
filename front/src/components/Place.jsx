@@ -4,7 +4,64 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import S from './Place.module.scss';
 import { getMarkerById, getMarkers, removeMarkerById } from '../api.js';
-import { markersAtom, settingsFiltersAtom } from '../state/atoms.js';
+import {
+  chartsAtom,
+  markersAtom,
+  settingsFiltersAtom,
+} from '../state/atoms.js';
+
+const unpackMongoDecimal = (value) => {
+  if (value?.$numberDecimal) {
+    return parseFloat(value.$numberDecimal);
+  }
+  return value;
+};
+
+export const groupByChart = (parameters) => {
+  if (!parameters) return [];
+  const newParameters = [];
+
+  for (const parameter of parameters) {
+    const parameterNameCount = parameters.filter(
+      (p) => p.name === parameter.name,
+    ).length;
+    if (parameterNameCount === 1) {
+      newParameters.push(parameter);
+    } else {
+      const parameterIndex = newParameters.findIndex(
+        (p) => p.name === parameter.name,
+      );
+      if (parameterIndex === -1) {
+        newParameters.push({
+          _id: parameter._id,
+          name: parameter.name,
+          xS: [
+            {
+              label: parameter.parameterX,
+              value: unpackMongoDecimal(parameter.valueX),
+            },
+          ],
+          yS: [
+            {
+              label: parameter.descriptionY,
+              value: unpackMongoDecimal(parameter.valueY),
+            },
+          ],
+        });
+      } else {
+        newParameters[parameterIndex].xS.push({
+          label: parameter.parameterX,
+          value: unpackMongoDecimal(parameter.valueX),
+        });
+        newParameters[parameterIndex].yS.push({
+          label: parameter.descriptionY,
+          value: unpackMongoDecimal(parameter.valueY),
+        });
+      }
+    }
+  }
+  return newParameters;
+};
 
 export const Place = (params) => {
   const [marker, setMarker] = useState(null);
@@ -13,6 +70,8 @@ export const Place = (params) => {
   const parametersRef = useRef(null);
   const filters = useRecoilValue(settingsFiltersAtom);
   const setMarkers = useSetRecoilState(markersAtom);
+
+  const setCharts = useSetRecoilState(chartsAtom);
 
   const systems = [
     {
@@ -36,6 +95,9 @@ export const Place = (params) => {
     );
   });
 
+  const advancedParameters = groupByChart(parameters);
+
+  console.log(advancedParameters);
   useEffect(() => {
     getMarkerById(params._id).then((marker) => {
       setMarker(marker);
@@ -64,6 +126,10 @@ export const Place = (params) => {
     setMarkers(markers);
   };
 
+  const handleCreateChart = (parameter) => {
+    setCharts((charts) => ({ visible: true, parameter }));
+  };
+
   return (
     <div>
       {!marker && <div>Завантаження...</div>}
@@ -90,28 +156,42 @@ export const Place = (params) => {
           <div className={S.wrapper}>
             <Segmented onChange={handleSystemChange} options={systemsOptions} />
             <div ref={parametersRef} className={S.content}>
-              {parameters.map((parameter) => (
+              {advancedParameters.map((parameter) => (
                 <div className={parameter?.type?.value} key={parameter._id}>
                   <i>{parameter.name}</i> -{' '}
-                  {parameter?.value ? (
+                  {parameter?.value && (
                     <b
                       dangerouslySetInnerHTML={{ __html: parameter.value }}
                     ></b>
-                  ) : (
+                  )}
+                  {parameter?.xS && (
+                    <Button
+                      onClick={() => handleCreateChart(parameter)}
+                      type="primary"
+                    >
+                      Графік
+                    </Button>
+                  )}
+                  {!parameter?.value && !parameter?.xS && (
                     <b>немає точних значень</b>
                   )}
                 </div>
               ))}
             </div>
           </div>
-          <Button
-            className={S.removeButton}
-            type="primary"
-            danger
-            onClick={handleRemove}
-          >
-            Видалити
-          </Button>
+          <div className={S.buttonWrapper}>
+            <Button
+              className={S.removeButton}
+              type="primary"
+              danger
+              onClick={handleRemove}
+            >
+              Видалити
+            </Button>
+            {/*<Button type="primary" onClick={handleCreateChart}>*/}
+            {/*  Створити графік*/}
+            {/*</Button>*/}
+          </div>
         </>
       )}
     </div>

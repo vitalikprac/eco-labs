@@ -17,6 +17,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import NewPlace from './components/NewPlace.jsx';
+import MyChart from './components/MyChart.jsx';
 
 const MarkerIcon = L.icon({
   iconUrl: markerIcon,
@@ -103,10 +104,7 @@ function App() {
           </Marker>
         ) : null}
       </MapContainer>
-      <div className="side">
-        <div>Лабораторна робота №1</div>
-        <div>Автори: Прачов Віталій ТР-21мп, Петренко Пилип ТР-23мп</div>
-      </div>
+      <MyChart />
     </div>
   );
 }

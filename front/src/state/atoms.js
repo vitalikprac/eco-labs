@@ -27,3 +27,11 @@ export const systemsAtom = atom({
   key: 'systems',
   default: [],
 });
+
+export const chartsAtom = atom({
+  key: 'charts',
+  default: {
+    visible: false,
+    values: [],
+  },
+});
