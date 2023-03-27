@@ -15,30 +15,17 @@ fastify.get('/', async () => {
   return { hello: 'works' };
 });
 
-const filterMarkers = (markers, filters) => {
+const filterMarkers = async (markers, filters) => {
   if (filters.includes('all')) {
     return markers;
   }
   const newMarkers = [];
-  const middleCoordinates = [50.426992, 30.580841];
-  if (filters.includes('left-side')) {
-    newMarkers.push(...markers.filter((marker) => marker.coordinates[1] >= middleCoordinates[1]));
-  }
-  if (filters.includes('right-side')) {
-    newMarkers.push(...markers.filter((marker) => marker.coordinates[1] <= middleCoordinates[1]));
-  }
-
   const findByNames = (markers, names) => {
     return markers.filter((marker) => marker.parameters.some((parameter) => names.some((x) => parameter.name.toLowerCase().includes(x.toLowerCase()))));
   };
 
-  if (filters.includes('economic')) {
-    const names = ['ВВП', 'квартир', 'лікар', 'газу'];
-    newMarkers.push(...findByNames(markers, names));
-  }
-  if (filters.includes('natural')) {
-    const names = ['AQI', 'Радіація', 'водневий показник', 'азот'];
-    newMarkers.push(...findByNames(markers, names));
+  if (filters.length > 0) {
+    newMarkers.push(...findByNames(markers, filters));
   }
 
   return newMarkers.filter((marker, index, self) => {

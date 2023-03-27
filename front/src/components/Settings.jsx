@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import S from './Settings.module.css';
-import { Button, Checkbox, Modal, notification, Input } from 'antd';
+import { Button, Tree, Modal, notification, Input } from 'antd';
 import {
   SettingFilled,
   PlusOutlined,
@@ -10,8 +10,9 @@ import {
   adminKeyAtom,
   newMarkerAtom,
   settingsFiltersAtom,
+  systemsAtom,
 } from '../state/atoms.js';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useMapEvents } from 'react-leaflet';
 import Info from './Info.jsx';
 
@@ -22,6 +23,8 @@ const Settings = () => {
   const [adminKey, setAdminKey] = useRecoilState(adminKeyAtom);
   const [modal, contextHolderModal] = Modal.useModal();
 
+  const systems = useRecoilValue(systemsAtom);
+
   const handleOpenSettings = () => {
     setIsModalOpen(true);
   };
@@ -30,15 +33,66 @@ const Settings = () => {
     setIsModalOpen(false);
   };
 
+  const testOptions = [
+    {
+      title: 'parent 1',
+      key: '1',
+      children: [
+        {
+          title: 'parent 1-0',
+          key: '2',
+          children: [
+            {
+              title: 'leaf',
+              key: '3',
+            },
+            {
+              title: 'leaf',
+              key: '4',
+            },
+            {
+              title: 'leaf',
+              key: '5',
+            },
+          ],
+        },
+        {
+          title: 'parent 1-1',
+          key: '6',
+          children: [
+            {
+              title: 'leaf',
+              key: '7',
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
   const options = [
-    { label: 'Всі', value: 'all' },
-    { label: 'Лівий берег', value: 'left-side' },
-    { label: 'Правий берег', value: 'right-side' },
-    { label: 'Економічні показники', value: 'economic' },
-    { label: 'Природні показники', value: 'natural' },
+    {
+      title: 'Всі',
+      key: 'all',
+      children: systems.map((system) => ({
+        title: system.name,
+        key: system.name,
+        children: system.values.map((value) => ({
+          title: value,
+          key: value,
+        })),
+      })),
+    },
+    // { label: 'Всі', value: 'all' },
+    // { label: 'Лівий берег', value: 'left-side' },
+    // { label: 'Правий берег', value: 'right-side' },
+    // { label: 'Економічні показники', value: 'economic' },
+    // { label: 'Природні показники', value: 'natural' },
+    // ...systems.map((system) => ({ label: system.name, value: system.name })),
   ];
 
   const handleSettingsChange = (values) => {
+    console.log(values);
     setSettings(values);
   };
 
@@ -117,11 +171,18 @@ const Settings = () => {
         className="settings"
       >
         <div>Фільтрування</div>
-        <Checkbox.Group
-          options={options}
-          defaultValue={settings}
-          onChange={handleSettingsChange}
+        <Tree
+          checkable
+          treeData={options}
+          defaultExpandedKeys={['all']}
+          defaultCheckedKeys={settings}
+          onCheck={handleSettingsChange}
         />
+        {/*<Checkbox.Group*/}
+        {/*  options={options}*/}
+        {/*  defaultValue={settings}*/}
+        {/*  onChange={handleSettingsChange}*/}
+        {/*/>*/}
       </Modal>
     </div>
   );

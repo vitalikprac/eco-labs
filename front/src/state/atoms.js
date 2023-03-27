@@ -22,3 +22,8 @@ export const newMarkerAtom = atom({
     isAdded: false,
   },
 });
+
+export const systemsAtom = atom({
+  key: 'systems',
+  default: [],
+});

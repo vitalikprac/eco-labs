@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './App.scss';
 
 import { Place } from './components/Place.jsx';
-import { getMarkers } from './api.js';
+import { getMarkers, getSystems } from './api.js';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import Settings from './components/Settings.jsx';
 import L from 'leaflet';
@@ -10,6 +10,7 @@ import {
   markersAtom,
   newMarkerAtom,
   settingsFiltersAtom,
+  systemsAtom,
 } from './state/atoms.js';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -31,9 +32,15 @@ function App() {
   const filters = useRecoilValue(settingsFiltersAtom);
   const [newMarker, setNewMarker] = useRecoilState(newMarkerAtom);
 
+  const [_, setSystems] = useRecoilState(systemsAtom);
+
   useEffect(() => {
     getMarkers(filters).then((markers) => {
       setMarkers(markers);
+    });
+
+    getSystems().then((systems) => {
+      setSystems(systems);
     });
 
     localStorage.setItem('filters', JSON.stringify(filters ?? []));
