@@ -2,7 +2,7 @@ import React from 'react';
 import * as S from './MyChart.module.scss';
 import { useRecoilState } from 'recoil';
 import { chartsAtom } from '../state/atoms.js';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import {
   ResponsiveContainer,
   LineChart,
@@ -41,11 +41,30 @@ const MyChart = () => {
 
   const data = convertParameterToChartData(charts.parameter);
 
+  const handleShowAuthors = () => {
+    Modal.info({
+      title: 'Про авторів',
+      content: (
+        <div>
+          <div>Лабораторна робота №2</div>
+          <div>
+            Автори:
+            <br />
+            <i>Прачов Віталій ТР-21мп</i>
+            <br />
+            <i>Петренко Пилип ТР-23мп</i>
+          </div>
+        </div>
+      ),
+    });
+  };
+
   return (
     <div className={S.wrapper}>
       <div className={S.side}>
-        <div>Лабораторна робота №1</div>
-        <div>Автори: Прачов Віталій ТР-21мп, Петренко Пилип ТР-23мп</div>
+        <Button type="primary" onClick={handleShowAuthors}>
+          Про авторів
+        </Button>
       </div>
       {charts?.visible && (
         <div className={S.chartWrapper}>
