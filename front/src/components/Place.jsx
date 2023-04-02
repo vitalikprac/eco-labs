@@ -21,8 +21,11 @@ const unpackMongoDecimal = (value) => {
   return value;
 };
 
-export const groupByChart = (parameters) => {
-  if (!parameters) return [];
+export const groupByChart = (parametersNotSorted) => {
+  if (!parametersNotSorted) return [];
+  const parameters = parametersNotSorted.sort((a, b) => {
+    return a.valueX - b.valueX;
+  });
   const newParameters = [];
 
   for (const parameter of parameters) {
@@ -178,7 +181,11 @@ export const Place = (params) => {
             <span className="param-title">Підсистеми</span>:
           </div>
           <div className={S.wrapper}>
-            <Segmented onChange={handleSystemChange} options={systemsOptions} />
+            <Segmented
+              defaultValue={currentSystem}
+              onChange={handleSystemChange}
+              options={systemsOptions}
+            />
             <div ref={parametersRef} className={S.content}>
               {advancedParameters.map((parameter) => (
                 <PlaceParameter
