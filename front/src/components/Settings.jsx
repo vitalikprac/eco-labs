@@ -92,7 +92,6 @@ const Settings = () => {
   ];
 
   const handleSettingsChange = (values) => {
-    console.log(values);
     setSettings(values);
   };
 

@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
+import { dateToMonthName } from '../utils.js';
 
 const convertParameterToChartData = (parameter) => {
   const data = [];
@@ -20,7 +21,7 @@ const convertParameterToChartData = (parameter) => {
   if (!parameter?.xS) return data;
   for (let i = 0; i < parameter.xS.length; i++) {
     data.push({
-      name: parameter.xS[i].label,
+      name: dateToMonthName(parameter.xS[i].value),
       xValue: parameter.xS[i].value,
       yLabel: parameter.yS[i].label,
       yValue: parameter.yS[i].value,
@@ -72,11 +73,14 @@ const MyChart = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip
-                labelFormatter={(label) => {
+                labelFormatter={(label, data) => {
+                  const date = data?.[0]?.payload?.xValue;
+                  if (date) {
+                    return `${label} (${date.toLocaleString()})`;
+                  }
                   return `${label}`;
                 }}
                 formatter={(value, name, props) => {
-                  console.log(props);
                   return [`${value} ${props?.payload?.yLabel}`];
                 }}
               />

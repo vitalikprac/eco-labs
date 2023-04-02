@@ -9,6 +9,7 @@ import {
   markersAtom,
   settingsFiltersAtom,
 } from '../state/atoms.js';
+import { dateToMonthName } from '../utils.js';
 
 const unpackMongoDecimal = (value) => {
   if (value?.$numberDecimal) {
@@ -38,7 +39,9 @@ export const groupByChart = (parameters) => {
           xS: [
             {
               label: parameter.parameterX,
-              value: unpackMongoDecimal(parameter.valueX),
+              value: new Date(
+                parseInt(unpackMongoDecimal(parameter.valueX), 10),
+              ),
             },
           ],
           yS: [
@@ -51,7 +54,7 @@ export const groupByChart = (parameters) => {
       } else {
         newParameters[parameterIndex].xS.push({
           label: parameter.parameterX,
-          value: unpackMongoDecimal(parameter.valueX),
+          value: new Date(parseInt(unpackMongoDecimal(parameter.valueX), 10)),
         });
         newParameters[parameterIndex].yS.push({
           label: parameter.descriptionY,
@@ -97,7 +100,6 @@ export const Place = (params) => {
 
   const advancedParameters = groupByChart(parameters);
 
-  console.log(advancedParameters);
   useEffect(() => {
     getMarkerById(params._id).then((marker) => {
       setMarker(marker);
@@ -164,6 +166,16 @@ export const Place = (params) => {
                       dangerouslySetInnerHTML={{ __html: parameter.value }}
                     ></b>
                   )}
+                  {parameter?.xS &&
+                    parameter?.yS &&
+                    parameter?.xS.map((x, index) => (
+                      <div key={index}>
+                        <b>{dateToMonthName(x.value)}</b> (
+                        {x.value.toTemporalInstant().toLocaleString()}){' '}
+                        <b>{parameter?.yS[index]?.value}</b>{' '}
+                        {parameter?.yS[index]?.label}
+                      </div>
+                    ))}
                   {parameter?.xS && (
                     <Button
                       onClick={() => handleCreateChart(parameter)}
