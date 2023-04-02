@@ -76,7 +76,7 @@ function App() {
             key={marker._id}
             position={marker.coordinates}
           >
-            <Popup>
+            <Popup className={'popup-marker-id-' + marker._id}>
               <Place {...marker} />
             </Popup>
           </Marker>

@@ -121,7 +121,6 @@ const PlaceParameter = (parameter) => {
   };
 
   const goodValue = parameter?.valueX ? S.good : '';
-  console.log(goodValue, parameter);
 
   return (
     <div className={parameter?.type?.value + ' ' + S.wrapper + ' ' + goodValue}>

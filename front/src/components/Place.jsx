@@ -101,13 +101,6 @@ export const Place = (params) => {
   const advancedParameters = groupByChart(parameters);
 
   useEffect(() => {
-    setMarker(null);
-    getMarkerById(params._id).then((marker) => {
-      setMarker(marker);
-    });
-  }, []);
-
-  useEffect(() => {
     if (!parametersRef.current) return;
     if (parametersRef.current.scrollHeight > 300) {
       parametersRef.current.style.height = '300px';
@@ -142,7 +135,7 @@ export const Place = (params) => {
   };
 
   return (
-    <div>
+    <div data-marker-id={params?._id}>
       {!marker && <div>Завантаження...</div>}
       {marker && (
         <>

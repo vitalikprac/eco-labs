@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import {
   adminKeyAtom,
+  markerAtom,
   newMarkerAtom,
   settingsFiltersAtom,
   systemsAtom,
@@ -15,11 +16,13 @@ import {
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useMapEvents } from 'react-leaflet';
 import Info from './Info.jsx';
+import { getMarkerById } from '../api.js';
 
 const Settings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [settings, setSettings] = useRecoilState(settingsFiltersAtom);
-  const setMarker = useSetRecoilState(newMarkerAtom);
+  const [newMarker, setNewMarker] = useRecoilState(newMarkerAtom);
+  const setMarker = useSetRecoilState(markerAtom);
   const [adminKey, setAdminKey] = useRecoilState(adminKeyAtom);
   const [modal, contextHolderModal] = Modal.useModal();
 
@@ -102,7 +105,7 @@ const Settings = () => {
       description: 'Натисніть куди додати маркер',
       placement: 'bottomRight',
     });
-    setMarker({
+    setNewMarker({
       isAdding: true,
       isAdded: false,
     });
@@ -116,9 +119,17 @@ const Settings = () => {
     });
   };
 
-  const [newMarker, setNewMarker] = useRecoilState(newMarkerAtom);
-
   useMapEvents({
+    popupopen: (e) => {
+      const markerFullId = [...e.popup._container.classList].find((x) =>
+        x.includes('popup-marker-id'),
+      );
+      const markerId = markerFullId.split('-')[3];
+      setMarker(null);
+      getMarkerById(markerId).then((marker) => {
+        setMarker(marker);
+      });
+    },
     click: (e) => {
       if (newMarker.isAdding) {
         setNewMarker({
