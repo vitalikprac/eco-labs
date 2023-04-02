@@ -27,6 +27,20 @@ export const getSystems = async () => {
   return await response.json();
 };
 
+export const updateParameterById = async (id, parameter) => {
+  const response = await fetch(`${API_URL}/parameter/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      adminKey: getAdminKey(),
+      ...parameter,
+    }),
+  });
+  return await response.json();
+};
+
 export const removeMarkerById = async (id) => {
   const response = await fetch(`${API_URL}/marker/${id}`, {
     method: 'DELETE',

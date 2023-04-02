@@ -5,6 +5,11 @@ export const settingsFiltersAtom = atom({
   default: JSON.parse(localStorage.getItem('filters') ?? '["all"]'),
 });
 
+export const markerAtom = atom({
+  key: 'marker',
+  default: null,
+});
+
 export const markersAtom = atom({
   key: 'markers',
   default: [],

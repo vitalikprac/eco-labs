@@ -16,6 +16,9 @@
 .content{
  max-height: 300px;
  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .buttonWrapper {

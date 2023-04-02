@@ -8,7 +8,7 @@ const ADMIN_KEY = 'secret-1234';
 
 fastify.register(FastifyCors, {
   origin: '*',
-  methods: ['GET', 'POST', 'DELETE'],
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],
 });
 
 fastify.get('/', async () => {
@@ -87,6 +87,24 @@ fastify.delete('/marker/:id', async (request, response) => {
   }
   await dbApi.deleteParameters(marker.parameters.map((x) => x._id));
   await dbApi.deleteMarker(marker._id);
+  return { success: true };
+});
+
+fastify.put('/parameter/:id', async (request, response) => {
+  if (request.body.adminKey !== ADMIN_KEY) {
+    return response.code(403).send({ success: false });
+  }
+  if (!request.body.name || !request.body.valueX || !request.body.valueY) {
+    return response.code(400).send({ success: false });
+  }
+
+  const res = await dbApi.updateParameter(request.params.id, {
+    name: request.body.name,
+    valueX: request.body.valueX,
+    valueY: request.body.valueY,
+    parameterX: request.body.parameterX,
+    descriptionY: request.body.descriptionY,
+  });
   return { success: true };
 });
 

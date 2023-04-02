@@ -105,6 +105,19 @@ export const dbApi = {
       },
     });
   },
+  updateParameter: async (id, parameter) => {
+    return db.collection('parameters').updateOne(
+      {
+        _id: objectIdOrInt(id),
+      },
+      {
+        $set: parameter,
+        $unset: {
+          value: null,
+        },
+      },
+    );
+  },
   createMarker: async (marker) => {
     return db.collection('markers').insertOne(marker);
   },

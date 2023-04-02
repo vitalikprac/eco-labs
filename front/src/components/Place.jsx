@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Segmented, notification } from 'antd';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { Button, Segmented, notification, Modal } from 'antd';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import S from './Place.module.scss';
 import { getMarkerById, getMarkers, removeMarkerById } from '../api.js';
 import {
   chartsAtom,
+  markerAtom,
   markersAtom,
   settingsFiltersAtom,
 } from '../state/atoms.js';
 import { dateToMonthName } from '../utils.js';
+import PlaceParameter from './PlaceParameter.jsx';
 
 const unpackMongoDecimal = (value) => {
   if (value?.$numberDecimal) {
@@ -67,14 +69,12 @@ export const groupByChart = (parameters) => {
 };
 
 export const Place = (params) => {
-  const [marker, setMarker] = useState(null);
+  const [marker, setMarker] = useRecoilState(markerAtom);
 
   const [currentSystem, setCurrentSystem] = useState(0);
   const parametersRef = useRef(null);
   const filters = useRecoilValue(settingsFiltersAtom);
   const setMarkers = useSetRecoilState(markersAtom);
-
-  const setCharts = useSetRecoilState(chartsAtom);
 
   const systems = [
     {
@@ -101,6 +101,7 @@ export const Place = (params) => {
   const advancedParameters = groupByChart(parameters);
 
   useEffect(() => {
+    setMarker(null);
     getMarkerById(params._id).then((marker) => {
       setMarker(marker);
     });
@@ -119,17 +120,25 @@ export const Place = (params) => {
   };
 
   const handleRemove = async () => {
-    const response = await removeMarkerById(params._id);
-    if (!response.success) {
-      alert('Помилка - невірний ключ адміністратора');
-    }
+    const remove = async () => {
+      const response = await removeMarkerById(params._id);
+      if (!response.success) {
+        alert('Помилка - невірний ключ адміністратора');
+      }
 
-    const markers = await getMarkers(filters);
-    setMarkers(markers);
-  };
+      const markers = await getMarkers(filters);
+      setMarkers(markers);
+    };
 
-  const handleCreateChart = (parameter) => {
-    setCharts((charts) => ({ visible: true, parameter }));
+    Modal.confirm({
+      title: 'Видалити місце?',
+      content: 'Ви впевнені, що хочете видалити місце?',
+      okText: 'Так',
+      cancelText: 'Ні',
+      onOk: () => {
+        remove();
+      },
+    });
   };
 
   return (
@@ -159,35 +168,10 @@ export const Place = (params) => {
             <Segmented onChange={handleSystemChange} options={systemsOptions} />
             <div ref={parametersRef} className={S.content}>
               {advancedParameters.map((parameter) => (
-                <div className={parameter?.type?.value} key={parameter._id}>
-                  <i>{parameter.name}</i> -{' '}
-                  {parameter?.value && (
-                    <b
-                      dangerouslySetInnerHTML={{ __html: parameter.value }}
-                    ></b>
-                  )}
-                  {parameter?.xS &&
-                    parameter?.yS &&
-                    parameter?.xS.map((x, index) => (
-                      <div key={index}>
-                        <b>{dateToMonthName(x.value)}</b> (
-                        {x.value.toTemporalInstant().toLocaleString()}){' '}
-                        <b>{parameter?.yS[index]?.value}</b>{' '}
-                        {parameter?.yS[index]?.label}
-                      </div>
-                    ))}
-                  {parameter?.xS && (
-                    <Button
-                      onClick={() => handleCreateChart(parameter)}
-                      type="primary"
-                    >
-                      Графік
-                    </Button>
-                  )}
-                  {!parameter?.value && !parameter?.xS && (
-                    <b>немає точних значень</b>
-                  )}
-                </div>
+                <PlaceParameter
+                  key={parameter._id}
+                  {...parameter}
+                ></PlaceParameter>
               ))}
             </div>
           </div>
