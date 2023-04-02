@@ -18,7 +18,7 @@ const NewPlace = () => {
 
   const handleFinish = async (values) => {
     const response = await saveMarker(values);
-    if (!response.success) {
+    if (response.needAdminKey) {
       alert('Помилка - невірний ключ адміністратора');
     }
 

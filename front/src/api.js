@@ -1,5 +1,5 @@
-//const API_URL = 'http://localhost:4444';
-const API_URL = 'https://eco-lab.ddns.net';
+const API_URL = 'http://localhost:4444';
+//const API_URL = 'https://eco-lab.ddns.net';
 export const getMarkers = async (filters) => {
   const response = await fetch(`${API_URL}/markers`, {
     method: 'POST',
@@ -27,6 +27,21 @@ export const getSystems = async () => {
   return await response.json();
 };
 
+export const createParameter = async (parameter, markerId) => {
+  const response = await fetch(`${API_URL}/parameter`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      adminKey: getAdminKey(),
+      markerId,
+      parameter: parameter,
+    }),
+  });
+  return await response.json();
+};
+
 export const updateParameterById = async (id, parameter) => {
   const response = await fetch(`${API_URL}/parameter/${id}`, {
     method: 'PUT',
@@ -36,6 +51,19 @@ export const updateParameterById = async (id, parameter) => {
     body: JSON.stringify({
       adminKey: getAdminKey(),
       ...parameter,
+    }),
+  });
+  return await response.json();
+};
+
+export const removeParameterById = async (id, parameter) => {
+  const response = await fetch(`${API_URL}/parameter/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      adminKey: getAdminKey(),
     }),
   });
   return await response.json();

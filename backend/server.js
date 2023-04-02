@@ -6,6 +6,8 @@ const fastify = Fastify({ logger: false });
 
 const ADMIN_KEY = 'secret-1234';
 
+const nullOrUndefined = (x) => x === null || x === undefined;
+
 fastify.register(FastifyCors, {
   origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'PUT'],
@@ -45,7 +47,7 @@ fastify.get('/systems', async () => {
 
 fastify.post('/marker', async (request, response) => {
   if (request.body.adminKey !== ADMIN_KEY) {
-    return response.code(403).send({ success: false });
+    return response.code(403).send({ success: false, needAdminKey: true });
   }
   const marker = request.body?.marker ?? {};
   let identificationId = (await dbApi.getIdentification(marker.identification))?._id;
@@ -78,7 +80,7 @@ fastify.get('/marker/:id', async (request) => {
 
 fastify.delete('/marker/:id', async (request, response) => {
   if (request.body.adminKey !== ADMIN_KEY) {
-    return response.code(403).send({ success: false });
+    return response.code(403).send({ success: false, needAdminKey: true });
   }
   const marker = await dbApi.getMarkerById(request.params.id);
   const markersWithIdentificationId = await dbApi.getMarkersWithIdentificationId(marker.identification_id);
@@ -92,9 +94,10 @@ fastify.delete('/marker/:id', async (request, response) => {
 
 fastify.put('/parameter/:id', async (request, response) => {
   if (request.body.adminKey !== ADMIN_KEY) {
-    return response.code(403).send({ success: false });
+    return response.code(403).send({ success: false, needAdminKey: true });
   }
-  if (!request.body.name || !request.body.valueX || !request.body.valueY) {
+
+  if (nullOrUndefined(request.body.name) || nullOrUndefined(request.body.valueX) || nullOrUndefined(request.body.valueY)) {
     return response.code(400).send({ success: false });
   }
 
@@ -105,6 +108,25 @@ fastify.put('/parameter/:id', async (request, response) => {
     parameterX: request.body.parameterX,
     descriptionY: request.body.descriptionY,
   });
+  return { success: true };
+});
+
+fastify.delete('/parameter/:id', async (request, response) => {
+  if (request.body.adminKey !== ADMIN_KEY) {
+    return response.code(403).send({ success: false, needAdminKey: true });
+  }
+  await dbApi.deleteParameters([request.params.id]);
+  return { success: true };
+});
+
+fastify.post('/parameter', async (request, response) => {
+  if (request.body.adminKey !== ADMIN_KEY) {
+    return response.code(403).send({ success: false, needAdminKey: true });
+  }
+
+  const insertedIds = await dbApi.createParameters([request.body.parameter]);
+  await dbApi.addParameterToMarker(request.body.markerId, insertedIds[0]);
+
   return { success: true };
 });
 

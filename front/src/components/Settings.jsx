@@ -124,7 +124,8 @@ const Settings = () => {
       const markerFullId = [...e.popup._container.classList].find((x) =>
         x.includes('popup-marker-id'),
       );
-      const markerId = markerFullId.split('-')[3];
+      const markerId = markerFullId?.split?.('-')?.[3];
+      if (!markerId) return;
       setMarker(null);
       getMarkerById(markerId).then((marker) => {
         setMarker(marker);

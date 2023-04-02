@@ -121,6 +121,18 @@ export const dbApi = {
   createMarker: async (marker) => {
     return db.collection('markers').insertOne(marker);
   },
+  addParameterToMarker: async (markerId, parameterId) => {
+    return db.collection('markers').updateOne(
+      {
+        _id: objectIdOrInt(markerId),
+      },
+      {
+        $push: {
+          parameters: objectIdOrInt(parameterId),
+        },
+      },
+    );
+  },
   deleteMarker: async (id) => {
     return db.collection('markers').deleteOne({ _id: id });
   },

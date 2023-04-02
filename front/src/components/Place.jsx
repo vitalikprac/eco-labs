@@ -12,6 +12,7 @@ import {
 } from '../state/atoms.js';
 import { dateToMonthName } from '../utils.js';
 import PlaceParameter from './PlaceParameter.jsx';
+import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
 
 const unpackMongoDecimal = (value) => {
   if (value?.$numberDecimal) {
@@ -38,9 +39,16 @@ export const groupByChart = (parameters) => {
         newParameters.push({
           _id: parameter._id,
           name: parameter.name,
+          rawParameters: [
+            {
+              ...parameter,
+              valueX: new Date(parameter.valueX),
+              valueY: unpackMongoDecimal(parameter.valueY),
+            },
+          ],
           xS: [
             {
-              label: parameter.parameterX,
+              label: '', //parameter.parameterX,
               value: new Date(
                 parseInt(unpackMongoDecimal(parameter.valueX), 10),
               ),
@@ -55,12 +63,17 @@ export const groupByChart = (parameters) => {
         });
       } else {
         newParameters[parameterIndex].xS.push({
-          label: parameter.parameterX,
+          label: '', //parameter.parameterX,
           value: new Date(parseInt(unpackMongoDecimal(parameter.valueX), 10)),
         });
         newParameters[parameterIndex].yS.push({
           label: parameter.descriptionY,
           value: unpackMongoDecimal(parameter.valueY),
+        });
+        newParameters[parameterIndex].rawParameters.push({
+          ...parameter,
+          valueX: new Date(parameter.valueX),
+          valueY: unpackMongoDecimal(parameter.valueY),
         });
       }
     }
@@ -92,8 +105,8 @@ export const Place = (params) => {
   }));
 
   const parameters = marker?.parameters.filter((parameter) => {
-    if (system._id === 0) return true;
-    return system.values.some((value) =>
+    if (system?._id === 0) return true;
+    return system?.values?.some((value) =>
       parameter?.name.toLowerCase().includes(value?.toLowerCase()),
     );
   });
@@ -115,7 +128,7 @@ export const Place = (params) => {
   const handleRemove = async () => {
     const remove = async () => {
       const response = await removeMarkerById(params._id);
-      if (!response.success) {
+      if (response.needAdminKey) {
         alert('Помилка - невірний ключ адміністратора');
       }
 
@@ -133,6 +146,13 @@ export const Place = (params) => {
       },
     });
   };
+
+  const { handleEdit } = useHandleEdit();
+
+  const handleAddParameter = () => {
+    handleEdit({}, true);
+  };
+  console.log(advancedParameters);
 
   return (
     <div data-marker-id={params?._id}>
@@ -177,9 +197,9 @@ export const Place = (params) => {
             >
               Видалити
             </Button>
-            {/*<Button type="primary" onClick={handleCreateChart}>*/}
-            {/*  Створити графік*/}
-            {/*</Button>*/}
+            <Button type="primary" onClick={handleAddParameter}>
+              Додати параметр
+            </Button>
           </div>
         </>
       )}
