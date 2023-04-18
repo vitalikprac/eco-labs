@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import { dbApi, startDb } from './mongodb.js';
+import { deleteAQI, postAQI, putAQI } from './formulas/aqi.js';
 
 const fastify = Fastify({ logger: false });
 
@@ -101,6 +102,8 @@ fastify.put('/parameter/:id', async (request, response) => {
     return response.code(400).send({ success: false });
   }
 
+  await putAQI(request);
+
   const res = await dbApi.updateParameter(request.params.id, {
     name: request.body.name,
     valueX: request.body.valueX,
@@ -115,6 +118,9 @@ fastify.delete('/parameter/:id', async (request, response) => {
   if (request.body.adminKey !== ADMIN_KEY) {
     return response.code(403).send({ success: false, needAdminKey: true });
   }
+
+  await deleteAQI(request);
+
   await dbApi.deleteParameters([request.params.id]);
   return { success: true };
 });
@@ -123,6 +129,8 @@ fastify.post('/parameter', async (request, response) => {
   if (request.body.adminKey !== ADMIN_KEY) {
     return response.code(403).send({ success: false, needAdminKey: true });
   }
+
+  await postAQI(request);
 
   const insertedIds = await dbApi.createParameters([request.body.parameter]);
   await dbApi.addParameterToMarker(request.body.markerId, insertedIds[0]);

@@ -8,8 +8,11 @@ import {
   updateParameterById,
 } from '../api.js';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { chartsAtom, markerAtom } from '../state/atoms.js';
+import { calculatedParamAtom, chartsAtom, markerAtom } from '../state/atoms.js';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
+import { getCalculatedParam } from './Calculated/util.js';
+
+const CALCULATED_PARAMETERS = ['AQI PM2.5'];
 
 const PlaceParameter = (parameter) => {
   const [marker, setMarker] = useRecoilState(markerAtom);
@@ -43,6 +46,17 @@ const PlaceParameter = (parameter) => {
     handleRemove(parameter?._id, marker?._id);
   };
 
+  const isCalculated = CALCULATED_PARAMETERS.includes(parameter?.name);
+
+  const setCalculatedParam = useSetRecoilState(calculatedParamAtom);
+  const handleSelectCalculated = (calculatedValue, calculatedValueDate) => {
+    setCalculatedParam({
+      calculatedValue,
+      calculatedValueDate,
+      name: parameter?.name,
+    });
+  };
+
   return (
     <div className={parameter?.type?.value + ' ' + S.wrapper + ' ' + goodValue}>
       <i>{parameter.name}</i>
@@ -60,7 +74,7 @@ const PlaceParameter = (parameter) => {
           {new Date(parameter?.valueX).toTemporalInstant().toLocaleString()})
         </>
       )}
-      {!parameter?.xS && (
+      {!isCalculated && !parameter?.xS && (
         <Button
           onClick={() => handleEdit(parameter)}
           className={S.editButton}
@@ -69,7 +83,7 @@ const PlaceParameter = (parameter) => {
           Редагувати
         </Button>
       )}
-      {!parameter?.xS && (
+      {!isCalculated && !parameter?.xS && (
         <Button
           danger
           onClick={() => handleRemove(parameter?._id, marker?._id)}
@@ -98,23 +112,40 @@ const PlaceParameter = (parameter) => {
               <br />
               {dateToMonthName(x.value)} (
               {x.value.toTemporalInstant().toLocaleString()})
-              <Button
-                onClick={() => handleEdit(parameter.rawParameters[index])}
-                className={S.editButton}
-                type="link"
-              >
-                Редагувати
-              </Button>
-              <Button
-                danger
-                onClick={() =>
-                  handleRemoveAdvancedParameter(parameter.rawParameters[index])
-                }
-                className={S.editButton}
-                type="link"
-              >
-                Видалити
-              </Button>
+              {!isCalculated && (
+                <>
+                  <Button
+                    onClick={() => handleEdit(parameter.rawParameters[index])}
+                    className={S.editButton}
+                    type="link"
+                  >
+                    Редагувати
+                  </Button>
+                  <Button
+                    danger
+                    onClick={() =>
+                      handleRemoveAdvancedParameter(
+                        parameter.rawParameters[index],
+                      )
+                    }
+                    className={S.editButton}
+                    type="link"
+                  >
+                    Видалити
+                  </Button>
+                </>
+              )}
+              {isCalculated && (
+                <Button
+                  className={S.selectButton}
+                  type="primary"
+                  onClick={() =>
+                    handleSelectCalculated(parameter?.yS[index]?.value, x.value)
+                  }
+                >
+                  Обрати
+                </Button>
+              )}
             </div>
           );
         })}

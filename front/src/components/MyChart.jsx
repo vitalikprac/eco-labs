@@ -100,7 +100,7 @@ const MyChart = () => {
                   return `${label}`;
                 }}
                 formatter={(value, name, props) => {
-                  return [`${value} ${props?.payload?.yLabel}`];
+                  return [`${value} ${props?.payload?.yLabel || ''}`];
                 }}
               />
               <Line type="monotone" dataKey="yValue" stroke="#82ca9d" />

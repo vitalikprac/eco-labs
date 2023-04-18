@@ -1,0 +1,60 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.25rem;
+}
+
+.value {
+  height: 70px;
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.valueHeader {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.valueContent {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.normal {
+  background-color: #ffea00;
+  color: #000;
+}
+
+.good {
+  background-color: #00c853;
+  color: #fff; 
+}
+
+.bad {
+  background-color: #d50000;
+  color: #fff;
+}
+
+.statusText {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.time {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  gap: 0.5rem
+}

@@ -48,6 +48,11 @@ export const dbApi = {
       })
       .toArray();
   },
+  getParameterById: async (id) => {
+    return db.collection('parameters').findOne({
+      _id: objectIdOrInt(id),
+    });
+  },
   createParameters: async (parameters) => {
     if (parameters.length === 0) {
       return {};
@@ -89,6 +94,12 @@ export const dbApi = {
 
     marker.identification = identification.find((item) => item._id.toString() === marker.identification_id.toString());
     return marker;
+  },
+  getMarkerByParameterId: async (id) => {
+    id = objectIdOrInt(id);
+    return db.collection('markers').findOne({
+      parameters: id,
+    });
   },
   getMarkersWithIdentificationId: async (id) => {
     id = objectIdOrInt(id);

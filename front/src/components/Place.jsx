@@ -1,18 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Segmented, notification, Modal } from 'antd';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
+import { Button, Modal, Segmented } from 'antd';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import S from './Place.module.scss';
-import { getMarkerById, getMarkers, removeMarkerById } from '../api.js';
+import { getMarkers, removeMarkerById } from '../api.js';
 import {
-  chartsAtom,
+  calculatedParamAtom,
   markerAtom,
   markersAtom,
   settingsFiltersAtom,
 } from '../state/atoms.js';
-import { dateToMonthName } from '../utils.js';
 import PlaceParameter from './PlaceParameter.jsx';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
+import Calculated from './Calculated/Calculated.jsx';
+import { getCalculatedParam } from './Calculated/util.js';
 
 const unpackMongoDecimal = (value) => {
   if (value?.$numberDecimal) {
@@ -85,12 +86,15 @@ export const groupByChart = (parametersNotSorted) => {
 };
 
 export const Place = (params) => {
-  const [marker, setMarker] = useRecoilState(markerAtom);
+  const [marker] = useRecoilState(markerAtom);
 
   const [currentSystem, setCurrentSystem] = useState(0);
   const parametersRef = useRef(null);
   const filters = useRecoilValue(settingsFiltersAtom);
   const setMarkers = useSetRecoilState(markersAtom);
+
+  const [calculatedParam, setCalculatedParam] =
+    useRecoilState(calculatedParamAtom);
 
   const systems = [
     {
@@ -155,7 +159,15 @@ export const Place = (params) => {
   const handleAddParameter = () => {
     handleEdit({}, true);
   };
-  console.log(advancedParameters);
+
+  const calculated = useMemo(
+    () => getCalculatedParam(advancedParameters),
+    [currentSystem, marker],
+  );
+
+  useEffect(() => {
+    setCalculatedParam(getCalculatedParam(advancedParameters));
+  }, [calculated]);
 
   return (
     <div data-marker-id={params?._id}>
@@ -186,6 +198,7 @@ export const Place = (params) => {
               onChange={handleSystemChange}
               options={systemsOptions}
             />
+            {calculatedParam && <Calculated {...calculatedParam} />}
             <div ref={parametersRef} className={S.content}>
               {advancedParameters.map((parameter) => (
                 <PlaceParameter

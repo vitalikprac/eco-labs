@@ -40,3 +40,8 @@ export const chartsAtom = atom({
     values: [],
   },
 });
+
+export const calculatedParamAtom = atom({
+  key: 'calculated-param',
+  default: undefined,
+});
