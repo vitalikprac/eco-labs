@@ -2,29 +2,80 @@ import * as S from './Calculated.module.scss';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { dateLocalized } from '../../utils.js';
 
-const getStatus = (value) => {
-  if (value >= 0 && value <= 50) {
-    return {
-      statusClass: S.good,
-      statusText: 'Добрий рівень',
-    };
+const getStatus = (value, name) => {
+  if (name === 'AQI PM2.5') {
+    if (value >= 0 && value <= 50) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+    if (value > 50 && value <= 100) {
+      return {
+        statusClass: S.normal,
+        statusText: 'Нормальний рівень',
+      };
+    }
+    if (value > 100 && value <= 150) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Поганий рівень',
+      };
+    }
   }
-  if (value > 50 && value <= 100) {
-    return {
-      statusClass: S.normal,
-      statusText: 'Нормальний рівень',
-    };
+
+  if (name === 'IS') {
+    if (value <= 5) {
+      return {
+        statusClass: S.veryGood,
+        statusText: 'Дуже добрий рівень',
+      };
+    }
+    if (value > 5 && value <= 10) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+    if (value > 10 && value <= 15) {
+      return {
+        statusClass: S.normal,
+        statusText: 'Задовільний рівень',
+      };
+    }
+    if (value > 15 && value <= 20) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Поганий рівень',
+      };
+    }
+    if (value > 20) {
+      return {
+        statusClass: S.veryBad,
+        statusText: 'Дуже поганий рівень',
+      };
+    }
   }
-  if (value > 100 && value <= 150) {
-    return {
-      statusClass: S.bad,
-      statusText: 'Поганий рівень',
-    };
+
+  if (name === 'Q1') {
+    if (value <= 1) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+    if (value > 1) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Поганий рівень',
+      };
+    }
   }
+
   return {};
 };
 const Calculated = ({ name, calculatedValue, calculatedValueDate }) => {
-  const { statusClass, statusText } = getStatus(calculatedValue);
+  const { statusClass, statusText } = getStatus(calculatedValue, name);
   return (
     <div className={S.wrapper}>
       <div className={S.value + ' ' + statusClass}>

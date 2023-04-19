@@ -1,4 +1,4 @@
-const CALCULATED_PARAMETERS = ['AQI PM2.5'];
+const CALCULATED_PARAMETERS = ['AQI PM2.5', 'IS', 'Q1'];
 
 export const getCalculatedParam = (parameters) => {
   const calculatedParam = parameters.find((parameter) =>

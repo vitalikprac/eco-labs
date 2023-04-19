@@ -2,6 +2,8 @@ import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import { dbApi, startDb } from './mongodb.js';
 import { deleteAQI, postAQI, putAQI } from './formulas/aqi.js';
+import { deleteEarth, postEarth, putEarth } from './formulas/earth.js';
+import { deleteWater, postWater, putWater } from './formulas/water.js';
 
 const fastify = Fastify({ logger: false });
 
@@ -103,6 +105,8 @@ fastify.put('/parameter/:id', async (request, response) => {
   }
 
   await putAQI(request);
+  await putEarth(request);
+  await putWater(request);
 
   const res = await dbApi.updateParameter(request.params.id, {
     name: request.body.name,
@@ -120,6 +124,8 @@ fastify.delete('/parameter/:id', async (request, response) => {
   }
 
   await deleteAQI(request);
+  await deleteEarth(request);
+  await deleteWater(request);
 
   await dbApi.deleteParameters([request.params.id]);
   return { success: true };
@@ -131,6 +137,8 @@ fastify.post('/parameter', async (request, response) => {
   }
 
   await postAQI(request);
+  await postEarth(request);
+  await postWater(request);
 
   const insertedIds = await dbApi.createParameters([request.body.parameter]);
   await dbApi.addParameterToMarker(request.body.markerId, insertedIds[0]);

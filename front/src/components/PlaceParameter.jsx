@@ -10,9 +10,8 @@ import {
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { calculatedParamAtom, chartsAtom, markerAtom } from '../state/atoms.js';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
-import { getCalculatedParam } from './Calculated/util.js';
 
-const CALCULATED_PARAMETERS = ['AQI PM2.5'];
+const CALCULATED_PARAMETERS = ['AQI PM2.5', 'IS', 'Q1'];
 
 const PlaceParameter = (parameter) => {
   const [marker, setMarker] = useRecoilState(markerAtom);
