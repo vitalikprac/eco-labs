@@ -2,16 +2,11 @@ import React from 'react';
 import { dateToMonthName } from '../utils.js';
 import { Button, Modal } from 'antd';
 import * as S from './PlaceParameter.module.scss';
-import {
-  getMarkerById,
-  removeParameterById,
-  updateParameterById,
-} from '../api.js';
+import { getMarkerById, removeParameterById } from '../api.js';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { calculatedParamAtom, chartsAtom, markerAtom } from '../state/atoms.js';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
-
-const CALCULATED_PARAMETERS = ['AQI PM2.5', 'IS', 'Q1'];
+import { CALCULATED_PARAMETERS, STABLE_PARAMETER } from '../data.js';
 
 const PlaceParameter = (parameter) => {
   const [marker, setMarker] = useRecoilState(markerAtom);
@@ -46,6 +41,7 @@ const PlaceParameter = (parameter) => {
   };
 
   const isCalculated = CALCULATED_PARAMETERS.includes(parameter?.name);
+  const isStable = STABLE_PARAMETER.includes(parameter?.name);
 
   const setCalculatedParam = useSetRecoilState(calculatedParamAtom);
   const handleSelectCalculated = (calculatedValue, calculatedValueDate) => {
@@ -134,22 +130,29 @@ const PlaceParameter = (parameter) => {
                   </Button>
                 </>
               )}
-              {isCalculated && (
-                <Button
-                  className={S.selectButton}
-                  type="primary"
-                  onClick={() =>
-                    handleSelectCalculated(parameter?.yS[index]?.value, x.value)
-                  }
-                >
-                  Обрати
-                </Button>
-              )}
+              {isCalculated ||
+                (isStable && (
+                  <Button
+                    className={S.selectButton}
+                    onClick={() =>
+                      handleSelectCalculated(
+                        parameter?.yS[index]?.value,
+                        x.value,
+                      )
+                    }
+                  >
+                    Обрати
+                  </Button>
+                ))}
             </div>
           );
         })}
       {parameter?.xS && (
-        <Button onClick={() => handleCreateChart(parameter)} type="primary">
+        <Button
+          className={S.chartButton}
+          onClick={() => handleCreateChart(parameter)}
+          type="primary"
+        >
           Графік
         </Button>
       )}

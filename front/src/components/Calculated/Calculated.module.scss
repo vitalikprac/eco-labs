@@ -24,6 +24,9 @@
 .valueContent {
   font-size: 0.8rem;
   white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  width: 70px;
 }
 
 .normal {
@@ -43,6 +46,11 @@
 
 .bad {
   background-color: #d50000;
+  color: #fff;
+}
+
+.unknown {
+  background-color: #bdbdbd;
   color: #fff;
 }
 

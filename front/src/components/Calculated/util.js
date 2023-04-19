@@ -1,8 +1,8 @@
-const CALCULATED_PARAMETERS = ['AQI PM2.5', 'IS', 'Q1'];
+import { ALL_CALCULATED_PARAMETERS } from '../../data.js';
 
 export const getCalculatedParam = (parameters) => {
   const calculatedParam = parameters.find((parameter) =>
-    CALCULATED_PARAMETERS.includes(parameter.name),
+    ALL_CALCULATED_PARAMETERS.includes(parameter.name),
   );
   if (!calculatedParam) return null;
 

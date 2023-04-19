@@ -166,6 +166,10 @@ export const Place = (params) => {
   );
 
   useEffect(() => {
+    if (currentSystem === 0) {
+      setCalculatedParam(null);
+      return;
+    }
     setCalculatedParam(getCalculatedParam(advancedParameters));
   }, [calculated]);
 

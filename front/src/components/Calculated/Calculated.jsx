@@ -72,7 +72,78 @@ const getStatus = (value, name) => {
     }
   }
 
-  return {};
+  if (name === 'γ-радіація') {
+    if (value <= 200) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+    if (value > 200 && value <= 300) {
+      return {
+        statusClass: S.normal,
+        statusText: 'Нормальний рівень',
+      };
+    }
+    if (value > 300 && value <= 1200) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Підвищений рівень',
+      };
+    }
+    if (value > 1200) {
+      return {
+        statusClass: S.veryBad,
+        statusText: 'Небезпечний рівень',
+      };
+    }
+  }
+
+  if (name === 'Народжуваність') {
+    if (value <= 1) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Поганий рівень',
+      };
+    }
+    if (value > 1 && value <= 1.3) {
+      return {
+        statusClass: S.normal,
+        statusText: 'Нормальний рівень',
+      };
+    }
+    if (value > 1.3) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+  }
+  if (name === 'ВВП') {
+    if (value <= 50) {
+      return {
+        statusClass: S.bad,
+        statusText: 'Поганий рівень',
+      };
+    }
+    if (value > 50 && value <= 100) {
+      return {
+        statusClass: S.normal,
+        statusText: 'Нормальний рівень',
+      };
+    }
+    if (value > 100) {
+      return {
+        statusClass: S.good,
+        statusText: 'Добрий рівень',
+      };
+    }
+  }
+
+  return {
+    statusClass: S.unknown,
+    statusText: 'Невідоме значення',
+  };
 };
 const Calculated = ({ name, calculatedValue, calculatedValueDate }) => {
   const { statusClass, statusText } = getStatus(calculatedValue, name);
