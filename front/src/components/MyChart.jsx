@@ -46,7 +46,7 @@ const MyChart = () => {
       title: 'Про авторів',
       content: (
         <div>
-          <div>Лабораторна робота №2</div>
+          <div>Лабораторна робота №3</div>
           <div>
             Автори:
             <br />
