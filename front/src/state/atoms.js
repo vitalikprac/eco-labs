@@ -45,3 +45,8 @@ export const calculatedParamAtom = atom({
   key: 'calculated-param',
   default: undefined,
 });
+
+export const energyInfoAtom = atom({
+  key: 'energy-info',
+  default: [],
+});

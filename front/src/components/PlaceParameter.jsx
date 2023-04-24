@@ -7,11 +7,14 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { calculatedParamAtom, chartsAtom, markerAtom } from '../state/atoms.js';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
 import { CALCULATED_PARAMETERS, STABLE_PARAMETER } from '../data.js';
+import EnergyInfo from './EnergyInfo.jsx';
 
 const PlaceParameter = (parameter) => {
   const [marker, setMarker] = useRecoilState(markerAtom);
   const setCharts = useSetRecoilState(chartsAtom);
   const { handleEdit } = useHandleEdit();
+
+  const currentSystem = parameter?.currentSystem;
 
   const handleRemove = (parameterId, markerId) => {
     Modal.confirm({
@@ -49,6 +52,17 @@ const PlaceParameter = (parameter) => {
       calculatedValue,
       calculatedValueDate,
       name: parameter?.name,
+    });
+  };
+
+  const handleEnergyInfo = (parameter) => {
+    Modal.info({
+      title: 'Значення',
+      width: '80%',
+      content: (
+        <EnergyInfo title={marker?.name} info={parameter.rawParameters} />
+      ),
+      className: 'energy-info-modal',
     });
   };
 
@@ -154,6 +168,16 @@ const PlaceParameter = (parameter) => {
           type="primary"
         >
           Графік
+        </Button>
+      )}
+      {/*5 meaning for Energy*/}
+      {currentSystem === 5 && (
+        <Button
+          type="primary"
+          className={S.energyButton}
+          onClick={() => handleEnergyInfo(parameter)}
+        >
+          Значення
         </Button>
       )}
       {!parameter?.value && !parameter.valueX && !parameter?.xS && (

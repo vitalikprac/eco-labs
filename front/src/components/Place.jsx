@@ -207,6 +207,7 @@ export const Place = (params) => {
               {advancedParameters.map((parameter) => (
                 <PlaceParameter
                   key={parameter._id}
+                  currentSystem={currentSystem}
                   {...parameter}
                 ></PlaceParameter>
               ))}
