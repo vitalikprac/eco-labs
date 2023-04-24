@@ -107,9 +107,9 @@ const EnergyInfo = ({ info, title }) => {
   const findMin = (monthColumns) => {
     let min = monthColumns[0].averageDay || Infinity;
     let month = 1;
-    monthColumns.forEach((month, index) => {
-      if (month.averageDay < min) {
-        min = month.averageDay;
+    monthColumns.forEach((m, index) => {
+      if (m.averageDay < min) {
+        min = mm.averageDay;
         month = index + 1;
       }
     });
@@ -122,9 +122,9 @@ const EnergyInfo = ({ info, title }) => {
   const findMax = (monthColumns) => {
     let max = monthColumns[0].averageDay || -Infinity;
     let month = 1;
-    monthColumns.forEach((month, index) => {
-      if (month.averageDay > max) {
-        max = month.averageDay;
+    monthColumns.forEach((m, index) => {
+      if (m.averageDay > max) {
+        max = m.averageDay;
         month = index + 1;
       }
     });
