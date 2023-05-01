@@ -109,7 +109,7 @@ const EnergyInfo = ({ info, title }) => {
     let month = 1;
     monthColumns.forEach((m, index) => {
       if (m.averageDay < min) {
-        min = mm.averageDay;
+        min = m.averageDay;
         month = index + 1;
       }
     });
