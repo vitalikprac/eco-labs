@@ -147,4 +147,14 @@ export const dbApi = {
   deleteMarker: async (id) => {
     return db.collection('markers').deleteOne({ _id: id });
   },
+  updateSystem: async (id, system) => {
+    return db.collection('systems').updateOne(
+      {
+        _id: objectIdOrInt(id),
+      },
+      {
+        $set: system,
+      },
+    );
+  },
 };

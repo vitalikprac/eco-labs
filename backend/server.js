@@ -4,6 +4,7 @@ import { dbApi, startDb } from './mongodb.js';
 import { deleteAQI, postAQI, putAQI } from './formulas/aqi.js';
 import { deleteEarth, postEarth, putEarth } from './formulas/earth.js';
 import { deleteWater, postWater, putWater } from './formulas/water.js';
+import { improvements1, improvements2, improvements3, improvements4 } from './testData3.js';
 
 const fastify = Fastify({ logger: false });
 
