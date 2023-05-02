@@ -125,7 +125,7 @@ const ResultReport = () => {
   ];
   return (
     <>
-      <div>{JSON.stringify(dataSource, null, 2)}</div>
+      {/*<div>{JSON.stringify(dataSource, null, 2)}</div>*/}
       <Table
         className={S.table}
         bordered

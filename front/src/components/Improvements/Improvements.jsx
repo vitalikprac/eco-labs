@@ -12,6 +12,7 @@ import EditableProgramCell from './EditableProgramCell.jsx';
 import EditableImprovementCell from './EditableImprovementCell.jsx';
 import EditableYearCell from './EditableYearCell.jsx';
 import ResultReport from './ResultReport.jsx';
+import Recommendations from './Recommendations.jsx';
 
 const convertDataToSum = (data, structure) => {
   const columns = structure.map((x) => x.key);
@@ -247,6 +248,7 @@ const Improvements = () => {
 
   return (
     <div className={S.wrapper}>
+      <Recommendations />
       <Table
         className={S.table}
         components={components}

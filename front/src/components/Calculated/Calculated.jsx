@@ -2,12 +2,13 @@ import * as S from './Calculated.module.scss';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { dateLocalized } from '../../utils.js';
 
-const getStatus = (value, name) => {
+export const getStatus = (value, name) => {
   if (name === 'AQI PM2.5') {
     if (value >= 0 && value <= 50) {
       return {
         statusClass: S.good,
         statusText: 'Добрий рівень',
+        good: true,
       };
     }
     if (value > 50 && value <= 100) {
@@ -29,12 +30,14 @@ const getStatus = (value, name) => {
       return {
         statusClass: S.veryGood,
         statusText: 'Дуже добрий рівень',
+        good: true,
       };
     }
     if (value > 5 && value <= 10) {
       return {
         statusClass: S.good,
         statusText: 'Добрий рівень',
+        good: true,
       };
     }
     if (value > 10 && value <= 15) {
@@ -62,6 +65,7 @@ const getStatus = (value, name) => {
       return {
         statusClass: S.good,
         statusText: 'Добрий рівень',
+        good: true,
       };
     }
     if (value > 1) {
@@ -77,6 +81,7 @@ const getStatus = (value, name) => {
       return {
         statusClass: S.good,
         statusText: 'Добрий рівень',
+        good: true,
       };
     }
     if (value > 200 && value <= 300) {
@@ -116,6 +121,7 @@ const getStatus = (value, name) => {
       return {
         statusClass: S.good,
         statusText: 'Добрий рівень',
+        good: true,
       };
     }
   }
@@ -135,6 +141,7 @@ const getStatus = (value, name) => {
     if (value > 100) {
       return {
         statusClass: S.good,
+        good: true,
         statusText: 'Добрий рівень',
       };
     }

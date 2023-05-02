@@ -81,12 +81,6 @@ export const table1StructureAtom = atom({
       key: 'money2023',
       editable: true,
     },
-    {
-      title: '2024',
-      dataIndex: 'money2024',
-      key: 'money2024',
-      editable: true,
-    },
   ],
   effects_UNSTABLE: [persistAtom],
 });

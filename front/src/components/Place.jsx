@@ -1,6 +1,11 @@
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Button, Modal, Segmented } from 'antd';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  useRecoilState,
+  useResetRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 import { useNavigate } from 'react-router-dom';
 
 import S from './Place.module.scss';
@@ -11,6 +16,8 @@ import {
   markersAtom,
   reportAtom,
   settingsFiltersAtom,
+  table1DataAtom,
+  table1StructureAtom,
 } from '../state/atoms.js';
 import PlaceParameter from './PlaceParameter.jsx';
 import { useHandleEdit } from '../hooks/useHandleEdit.jsx';
@@ -196,7 +203,25 @@ export const Place = (params) => {
       });
   };
 
+  const setDataSource = useSetRecoilState(table1DataAtom);
+  const setTableStructure = useSetRecoilState(table1StructureAtom);
+
   const handleCreateReport = (marker, systems) => {
+    setDataSource([
+      {
+        key: '0',
+        name: null,
+        program: null,
+      },
+    ]);
+    setTableStructure([
+      {
+        title: '2023',
+        dataIndex: 'money2023',
+        key: 'money2023',
+        editable: true,
+      },
+    ]);
     setReport({
       marker,
       systems,
