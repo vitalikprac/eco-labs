@@ -11,6 +11,7 @@ import { EditableContext } from '../../state/context.js';
 import EditableProgramCell from './EditableProgramCell.jsx';
 import EditableImprovementCell from './EditableImprovementCell.jsx';
 import EditableYearCell from './EditableYearCell.jsx';
+import ResultReport from './ResultReport.jsx';
 
 const convertDataToSum = (data, structure) => {
   const columns = structure.map((x) => x.key);
@@ -93,7 +94,6 @@ const Improvements = () => {
       const { [`money${year}`]: _, ...rest } = item;
       return rest;
     });
-    console.log(newData);
     if (newStructure.length === 0) {
       //alert('Не можна видалити останній рік');
       //return;
@@ -247,7 +247,6 @@ const Improvements = () => {
 
   return (
     <div className={S.wrapper}>
-      <div>{JSON.stringify(dataSource, null, 2)}</div>
       <Table
         className={S.table}
         components={components}
@@ -279,6 +278,7 @@ const Improvements = () => {
           <Button type="primary">Добавити рік</Button>
         </Popconfirm>
       </div>
+      <ResultReport />
     </div>
   );
 };
