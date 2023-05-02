@@ -1,0 +1,33 @@
+.wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.table {
+  width: 100%;
+ 
+}
+
+.buttonsWrapper {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.yearWrapper {
+  display: flex;
+  justify-content: space-between;;
+}
+
+
+.editText {
+  cursor: pointer;
+  color: grey;
+}

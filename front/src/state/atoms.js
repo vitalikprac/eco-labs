@@ -1,4 +1,7 @@
 import { atom } from 'recoil';
+import { recoilPersist } from 'recoil-persist';
+
+const { persistAtom } = recoilPersist();
 
 export const settingsFiltersAtom = atom({
   key: 'settings-filters',
@@ -49,4 +52,41 @@ export const calculatedParamAtom = atom({
 export const energyInfoAtom = atom({
   key: 'energy-info',
   default: [],
+});
+
+export const reportAtom = atom({
+  key: 'report',
+  default: {},
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const table1DataAtom = atom({
+  key: 'table1',
+  default: [
+    {
+      key: '0',
+      name: null,
+      program: null,
+    },
+  ],
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const table1StructureAtom = atom({
+  key: 'table1-structure',
+  default: [
+    {
+      title: '2023',
+      dataIndex: 'money2023',
+      key: 'money2023',
+      editable: true,
+    },
+    {
+      title: '2024',
+      dataIndex: 'money2024',
+      key: 'money2024',
+      editable: true,
+    },
+  ],
+  effects_UNSTABLE: [persistAtom],
 });

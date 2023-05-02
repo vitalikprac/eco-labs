@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Button, Modal, Segmented } from 'antd';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
 
 import S from './Place.module.scss';
 import { getMarkers, removeMarkerById } from '../api.js';
@@ -8,6 +9,7 @@ import {
   calculatedParamAtom,
   markerAtom,
   markersAtom,
+  reportAtom,
   settingsFiltersAtom,
 } from '../state/atoms.js';
 import PlaceParameter from './PlaceParameter.jsx';
@@ -87,11 +89,13 @@ export const groupByChart = (parametersNotSorted) => {
 
 export const Place = (params) => {
   const [marker] = useRecoilState(markerAtom);
-
+  const [report, setReport] = useRecoilState(reportAtom);
   const [currentSystem, setCurrentSystem] = useState(0);
   const parametersRef = useRef(null);
   const filters = useRecoilValue(settingsFiltersAtom);
   const setMarkers = useSetRecoilState(markersAtom);
+
+  const navigate = useNavigate();
 
   const [calculatedParam, setCalculatedParam] =
     useRecoilState(calculatedParamAtom);
@@ -173,6 +177,34 @@ export const Place = (params) => {
     setCalculatedParam(getCalculatedParam(advancedParameters));
   }, [calculated]);
 
+  const generateAllCalculated = () => {
+    return systems
+      .filter((x) => x._id !== 0)
+      .map((system) => {
+        const parameters = marker?.parameters.filter((parameter) => {
+          if (system?._id === 0) return true;
+          return system?.values?.some((value) =>
+            parameter?.name.toLowerCase().includes(value?.toLowerCase()),
+          );
+        });
+        const advancedParameters = groupByChart(parameters);
+        const calculated = getCalculatedParam(advancedParameters);
+        return {
+          ...calculated,
+          system,
+        };
+      });
+  };
+
+  const handleCreateReport = (marker, systems) => {
+    setReport({
+      marker,
+      systems,
+      calculated: generateAllCalculated(),
+    });
+    window.open('#/report', '_blank');
+  };
+
   return (
     <div data-marker-id={params?._id}>
       {!marker && <div>Завантаження...</div>}
@@ -193,6 +225,12 @@ export const Place = (params) => {
             ></b>
           </div>
           <hr />
+          <Button
+            type="primary"
+            onClick={() => handleCreateReport(marker, systems)}
+          >
+            Створити звіт по заходам покращення станів
+          </Button>
           <div>
             <span className="param-title">Підсистеми</span>:
           </div>
