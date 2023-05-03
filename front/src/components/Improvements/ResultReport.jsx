@@ -61,6 +61,9 @@ const ResultReport = () => {
       title: '№',
       dataIndex: 'key',
       key: 'key',
+      render: (text, record, index) => {
+        return index + 1;
+      },
     },
     {
       title: 'Назва напрямку діяльності',
@@ -135,7 +138,7 @@ const ResultReport = () => {
   const generateRow2 = (index) => {
     const d = preparedDataSource[index];
     return [
-      parseInt(d['key'], 10) + 1,
+      index + 1,
       d['program'],
       d['name'],
       d['term'],
