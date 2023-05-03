@@ -1,9 +1,9 @@
 import React from 'react';
-import { Table, Input } from 'antd';
+import { Table, Input, Button } from 'antd';
 import * as S from './ResultReport.module.scss';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { reportAtom, table1DataAtom } from '../../state/atoms.js';
-
+import { writeFileXLSX, utils } from 'xlsx';
 const { TextArea } = Input;
 
 const ResultReport = () => {
@@ -17,7 +17,7 @@ const ResultReport = () => {
     const financing = moneyKeys
       .map((el) => {
         if (parseFloat(x[el]) === 0) return null;
-        return `${el.slice(5)} - <b>${x[el]}</b> тис грн.`;
+        return `${el.slice(5)} - ${x[el]} тис грн.`;
       })
       .filter(Boolean)
       .join('<br/>');
@@ -123,9 +123,77 @@ const ResultReport = () => {
       dataIndex: 'result',
     },
   ];
+  console.log(dataSource);
+
+  const generateRow = (index) => {
+    const d = preparedDataSource[index];
+    const moneyKeys = Object.keys(d).filter((y) => y.includes('money'));
+    const values = moneyKeys.map((el) => d[el]);
+    return [d['name'], d['program'], ...values];
+  };
+
+  const generateRow2 = (index) => {
+    const d = preparedDataSource[index];
+    return [
+      parseInt(d['key'], 10) + 1,
+      d['program'],
+      d['name'],
+      d['term'],
+      d['executor'],
+      d['sourceMoney'],
+      d['financing'].replaceAll('<br/>', ' '),
+      d['result'],
+    ];
+  };
+
+  const handleGenerateXlsx = () => {
+    const workbook = utils.book_new();
+
+    const moneyKeys = Object.keys(preparedDataSource[0])
+      .filter((y) => y.includes('money'))
+      .map((el) => el.slice(5));
+    const worksheet = utils.aoa_to_sheet([
+      [
+        'Оперативні цілі, завдання та заходи стратегії',
+        'Захід, що відповідає заходу стратегії',
+        'Обсяги, фінансування, тис. грн',
+      ],
+      ['', '', ...moneyKeys],
+      ...preparedDataSource.map((x, i) => generateRow(i)),
+      [
+        '',
+        'Всього',
+        ...moneyKeys.map((el) =>
+          preparedDataSource.reduce(
+            (acc, curr) => acc + parseFloat(curr[`money${el}`]),
+            0,
+          ),
+        ),
+      ],
+    ]);
+
+    utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+    const worksheet2 = utils.aoa_to_sheet([
+      [
+        '№',
+        'Назва напрямку діяльності',
+        'Перелік заходів програми',
+        'Строк виконання',
+        'Виконавці',
+        'Джерела фінансування',
+        'Орієнтовні обсяги фінансування (вартість), тис.грн, у т.ч. за роками:',
+        'Очікувані результати',
+      ],
+      ...preparedDataSource.map((x, i) => generateRow2(i)),
+    ]);
+
+    utils.book_append_sheet(workbook, worksheet2, 'Sheet2');
+    const time = new Date().toLocaleString().replaceAll(':', '-');
+    writeFileXLSX(workbook, `Report-${time}.xlsx`);
+  };
   return (
     <>
-      {/*<div>{JSON.stringify(dataSource, null, 2)}</div>*/}
       <Table
         className={S.table}
         bordered
@@ -133,6 +201,13 @@ const ResultReport = () => {
         columns={columns}
         pagination={false}
       />
+      <Button
+        className={S.reportButton}
+        type="primary"
+        onClick={handleGenerateXlsx}
+      >
+        Згенерувати документ
+      </Button>
     </>
   );
 };

@@ -13,7 +13,7 @@ const Recommendations = () => {
         <b>Рекомендації:</b>
       </div>
       <div>
-        {calculated.map((x) => {
+        {calculated?.map((x) => {
           const r = getStatus(x.calculatedValue, x.name);
           if (x.calculatedValue) {
             return (
@@ -27,7 +27,7 @@ const Recommendations = () => {
                     <i>Переглянте рекомендації для покращення показника</i>
                     <br />
                     <b>{x.system.improvement_program}</b> -{' '}
-                    {x.system.improvements.map((y) => y.name).join(', ')}
+                    {x.system.improvements?.map((y) => y.name).join(', ')}
                   </div>
                 )}
               </div>
