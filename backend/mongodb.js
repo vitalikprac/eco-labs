@@ -1,7 +1,8 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { MongoClient, ObjectId } from 'mongodb';
 
-const url = 'mongodb+srv://vitalikprac:3p3UUTz6ITVSDGZW@cluster0.w4m7vdr.mongodb.net/test';
-const client = new MongoClient(url);
+const client = new MongoClient(process.env.MONGODB_URL);
 const dbName = 'eco';
 const db = client.db(dbName);
 

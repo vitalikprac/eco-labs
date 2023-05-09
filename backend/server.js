@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import Fastify from 'fastify';
 import FastifyCors from '@fastify/cors';
 import { dbApi, startDb } from './mongodb.js';
@@ -8,7 +10,7 @@ import { improvements1, improvements2, improvements3, improvements4 } from './te
 
 const fastify = Fastify({ logger: false });
 
-const ADMIN_KEY = 'secret-1234';
+const ADMIN_KEY = process.env.SECRET_KEY;
 
 const nullOrUndefined = (x) => x === null || x === undefined;
 
